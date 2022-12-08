@@ -23,8 +23,14 @@ public class ServiceManager {
     // ------------------------ //
     
     var isActiveService: Bool = true
+    
+    
+    // --------- RFD --------- //
     var timeSleepRF: Double = 0
     let SLEEP_THRESHOLD: Double = 600
+    
+    var currentRfd = [String: Double]()
+    // ------------------------ //
     
     public var bleAvg = [String: Double]()
     
@@ -86,7 +92,7 @@ public class ServiceManager {
             self.isActiveService = true
             
             if (self.isActiveService) {
-                self.bleAvg = bleDictionary
+                self.currentRfd = bleDictionary
             }
         } else {
             self.timeSleepRF += RF_INTERVAL
@@ -98,8 +104,40 @@ public class ServiceManager {
         }
     }
     
-    func getSpotResult() {
+    func getSpotResult(completion: @escaping (Int, String) -> Void) {
+        if (!self.currentRfd.isEmpty) {
+            let input = createNeptuneInput()
+            NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
+                if (statusCode == 200) {
+                    completion(statusCode, returnedString)
+                } else {
+                    completion(statusCode, "Fail")
+                }
+            })
+        } else {
+            completion(500, "Ward Data is Empty")
+        }
+    }
+    
+    func createNeptuneInput() -> ReceivedForce {
+        var rfd: ReceivedForce = ReceivedForce()
+        var inputReceivedForce: [WardData] = [WardData()]
         
+        for key in self.currentRfd.keys {
+            let id = key
+            let rssi: Double = self.currentRfd[key] ?? -100.0
+            
+            var wardData: WardData = WardData()
+            wardData.wardID = id
+            wardData.rssi = rssi
+            
+            inputReceivedForce.append(wardData)
+        }
+        
+        inputReceivedForce.remove(at: 0)
+        rfd.WardDatas = inputReceivedForce
+        
+        return rfd
     }
     
     func getCurrentTimeInMilliseconds() -> Int

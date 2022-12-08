@@ -20,40 +20,34 @@ public struct SensorData {
     }
 }
 
-struct ReceivedForce: Codable {
-    var rssi: Double = 0
-    var wardID: String = ""
-}
-
-
-public struct OnSpotAuthorizationResult: Codable {
-    public var spots: [Spot]
+public struct ReceivedForce: Codable {
+    public var WardDatas: [WardData]
     
     public init() {
-        self.spots = []
+        self.WardDatas = []
     }
 }
 
-public struct Spot: Codable {
-    public var ccs: Double
-    public var spotID: String
+public struct WardData: Codable {
+    public var rssi: Double
+    public var wardID: String
     
     public init() {
-        self.ccs = 0
-        self.spotID = ""
+        self.rssi = 0
+        self.wardID = ""
     }
 }
 
-public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
-    let result = OnSpotAuthorizationResult.init()
-    let decoder = JSONDecoder()
-
-    let jsonString = json
-
-    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotAuthorizationResult.self, from: data) {
-
-        return decoded
-    }
-
-    return result
-}
+//public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
+//    let result = OnSpotAuthorizationResult.init()
+//    let decoder = JSONDecoder()
+//
+//    let jsonString = json
+//
+//    if let data = jsonString.data(using: .utf8), let decoded = try? decoder.decode(OnSpotAuthorizationResult.self, from: data) {
+//
+//        return decoded
+//    }
+//
+//    return result
+//}
