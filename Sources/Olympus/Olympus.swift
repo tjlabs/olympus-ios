@@ -3,4 +3,8 @@ public struct Olympus {
 
     public init() {
     }
+    
+    public func test() {
+        print("Olympus Test Complete !")
+    }
 }
