@@ -26,6 +26,8 @@ public class ServiceManager {
     var timeSleepRF: Double = 0
     let SLEEP_THRESHOLD: Double = 600
     
+    public var bleAvg = [String: Double]()
+    
     public init() {
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
@@ -84,7 +86,7 @@ public class ServiceManager {
             self.isActiveService = true
             
             if (self.isActiveService) {
-                print(bleDictionary)
+                self.bleAvg = bleDictionary
             }
         } else {
             self.timeSleepRF += RF_INTERVAL
