@@ -87,6 +87,7 @@ public class ServiceManager {
             
             if (self.isActiveService) {
                 self.bleAvg = bleDictionary
+                print(self.bleAvg)
             }
         } else {
             self.timeSleepRF += RF_INTERVAL
