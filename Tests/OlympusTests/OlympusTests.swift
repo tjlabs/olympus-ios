@@ -1,4 +1,5 @@
 import XCTest
+
 @testable import Olympus
 
 final class OlympusTests: XCTestCase {
@@ -6,6 +7,5 @@ final class OlympusTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(Olympus().text, "Hello, World!")
     }
 }
