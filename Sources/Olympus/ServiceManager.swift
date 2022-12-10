@@ -99,45 +99,46 @@ public class ServiceManager {
             if (self.timeSleepRF >= SLEEP_THRESHOLD) {
                 print("(Jupiter) Enter Sleep Mode")
                 self.isActiveService = false
-                self.timeSleepRF = 0
             }
         }
     }
     
-    func getSpotResult(completion: @escaping (Int, String) -> Void) {
+    public func getSpotResult(completion: @escaping (Int, String) -> Void) {
         if (!self.currentRfd.isEmpty) {
             let input = createNeptuneInput()
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
                 } else {
-                    completion(statusCode, "Fail")
+                    completion(statusCode, "invalid request")
                 }
             })
         } else {
-            completion(500, "Ward Data is Empty")
+            completion(500, "invalid request")
         }
     }
     
     func createNeptuneInput() -> ReceivedForce {
-        var rfd: ReceivedForce = ReceivedForce()
-        var inputReceivedForce: [WardData] = [WardData()]
-        
+        var rfd: rf = rf()
+        var inputReceivedForce: [ble] = [ble()]
+
         for key in self.currentRfd.keys {
             let id = key
             let rssi: Double = self.currentRfd[key] ?? -100.0
-            
-            var wardData: WardData = WardData()
+
+            var wardData: ble = ble()
             wardData.wardID = id
             wardData.rssi = rssi
-            
+
             inputReceivedForce.append(wardData)
         }
-        
+
         inputReceivedForce.remove(at: 0)
-        rfd.WardDatas = inputReceivedForce
+        rfd.bles = inputReceivedForce
+
+        let receivedForce: ReceivedForce = ReceivedForce(rf: rfd)
         
-        return rfd
+        return receivedForce
     }
     
     func getCurrentTimeInMilliseconds() -> Int

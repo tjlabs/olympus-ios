@@ -20,15 +20,21 @@ public struct SensorData {
     }
 }
 
+// ---------- Received Force Data ---------- //
 public struct ReceivedForce: Codable {
-    public var WardDatas: [WardData]
+    public var rf: rf
+}
+
+
+public struct rf: Codable {
+    public var bles: [ble]
     
     public init() {
-        self.WardDatas = []
+        self.bles = []
     }
 }
 
-public struct WardData: Codable {
+public struct ble: Codable {
     public var rssi: Double
     public var wardID: String
     
@@ -37,6 +43,27 @@ public struct WardData: Codable {
         self.wardID = ""
     }
 }
+// ------------------------------------------ //
+
+
+public struct NeptuneResults: Codable {
+    public var results: [result]
+    
+    public init() {
+        self.results = []
+    }
+}
+
+public struct result: Codable {
+    public var spotID: String
+    public var ccs: Double
+    
+    public init() {
+        self.spotID = ""
+        self.ccs = 0
+    }
+}
+
 
 //public func decodeOSA(json: String) -> OnSpotAuthorizationResult {
 //    let result = OnSpotAuthorizationResult.init()
