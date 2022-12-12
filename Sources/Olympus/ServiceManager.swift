@@ -160,7 +160,7 @@ public class ServiceManager {
                 }
             })
         } else {
-            completion(500, "invalid request")
+            completion(500, "RFD for Spot is empty")
         }
     }
     
