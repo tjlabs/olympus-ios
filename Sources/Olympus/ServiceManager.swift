@@ -30,6 +30,7 @@ public class ServiceManager {
     let SLEEP_THRESHOLD: Double = 600
     
     var currentRfd = [String: Double]()
+    var currentSpotRfd = [String: Double]()
     // ------------------------ //
     
     public var bleAvg = [String: Double]()
@@ -81,8 +82,10 @@ public class ServiceManager {
     
     @objc func receivedForceTimerUpdate() {
         bleManager.trimBleData()
+        bleManager.trimSpotBleData()
         
         var bleDictionary = bleManager.bleAvg
+        var bleSpotDictionary = bleManager.bleSpotAvg
         if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
         }
@@ -101,11 +104,15 @@ public class ServiceManager {
                 self.isActiveService = false
             }
         }
+        
+        if (!bleSpotDictionary.isEmpty) {
+            self.currentSpotRfd = bleSpotDictionary
+        }
     }
     
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
         if (!self.currentRfd.isEmpty) {
-            let input = createNeptuneInput()
+            let input = createNeptuneInput(bleDictionray: self.currentRfd)
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
@@ -118,7 +125,7 @@ public class ServiceManager {
         }
     }
     
-    func createNeptuneInput() -> ReceivedForce {
+    func createNeptuneInput(bleDictionray: Dictionary<String, Double>) -> ReceivedForce {
         var rfd: rf = rf()
         var inputReceivedForce: [ble] = [ble()]
 
@@ -139,6 +146,22 @@ public class ServiceManager {
         let receivedForce: ReceivedForce = ReceivedForce(rf: rfd)
         
         return receivedForce
+    }
+    
+    public func changeSpot(spotID: String, completion: @escaping (Int, String) -> Void) {
+        if (!self.currentSpotRfd.isEmpty) {
+            let input = createNeptuneInput(bleDictionray: self.currentSpotRfd)
+            let url = CHANGE_SPOT_URL + spotID + "/rf"
+            NetworkManager.shared.changeSpot(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
+                if (statusCode == 200) {
+                    completion(statusCode, "Success")
+                } else {
+                    completion(statusCode, "invalid request")
+                }
+            })
+        } else {
+            completion(500, "invalid request")
+        }
     }
     
     func getCurrentTimeInMilliseconds() -> Int

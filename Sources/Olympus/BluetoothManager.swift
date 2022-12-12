@@ -72,6 +72,9 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var bleRaw = [String: Double]()
     var bleAvg = [String: Double]()
     var bleCheck = [String: [Double]]()
+    
+    var bleForSpotChange = [String: [[Double]]]()
+    var bleSpotAvg = [String: Double]()
     var bleDiscoveredTime: Double = 0
     
     public var BLE_VALID_TIME: Double = 1000
@@ -185,7 +188,19 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
                     }
                     
+                    if (bleForSpotChange.contains(where: condition)) {
+                        let data = bleForSpotChange.filter(condition)
+                        var value:[[Double]] = data[bleName]!
+                        let dataToAdd: [Double] = [RSSI.doubleValue, bleTime]
+                        value.append(dataToAdd)
+                        
+                        bleForSpotChange.updateValue(value, forKey: bleName)
+                    } else {
+                        bleForSpotChange.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
+                    }
+                    
                     trimBleData()
+                    trimSpotBleData()
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
@@ -264,7 +279,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         } else {
             self.BLE_VALID_TIME = 1500
         }
-//        print("(Jupiter) BLE Valid Time : \(self.BLE_VALID_TIME)")
     }
     
     func trimBleData() {
@@ -298,6 +312,35 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bleAvg = avgBleData(bleDictionary: bleDictionary)
     }
     
+    func trimSpotBleData() {
+        let nowTime = getCurrentTimeInMilliseconds()
+        
+        let keys: [String] = Array(bleForSpotChange.keys.sorted())
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleForSpotChange[bleID]!
+            let bleCount = bleData.count
+            var newValue = [[Double]]()
+            for i in 0..<bleCount {
+                let rssi = bleData[i][0]
+                let time = bleData[i][1]
+                
+                if ((nowTime - time <= 5000) && (rssi >= -100)) {
+                    let dataToAdd: [Double] = [rssi, time]
+                    newValue.append(dataToAdd)
+                }
+            }
+            
+            if ( newValue.count == 0 ) {
+                bleForSpotChange.removeValue(forKey: bleID)
+            } else {
+                bleForSpotChange.updateValue(newValue, forKey: bleID)
+            }
+        }
+        
+        bleSpotAvg = avgBleData(bleDictionary: bleForSpotChange)
+    }
+    
     func avgBleData(bleDictionary: Dictionary<String, [[Double]]>) -> Dictionary<String, Double> {
         var ble = [String: Double]()
         
@@ -308,7 +351,6 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             let bleCount = bleData.count
             
             var rssiSum: Double = 0
-//            print("BLE INFO :", bleCount, "/", bleID, "/", bleData)
             
             for i in 0..<bleCount {
                 let rssi = bleData[i][0]
