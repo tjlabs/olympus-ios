@@ -1,6 +1,7 @@
 import Foundation
 
-let RELEASE_URL_i = "https://calc-test.olympus.tjlabs.dev/"
+//let RELEASE_URL_i = "https://calc-test.olympus.tjlabs.dev/"
+let RELEASE_URL_i = "https://test.calc.olympus.tjlabs.dev/"
 
 var BASE_URL = RELEASE_URL_i
 let NEPTUNE_URL = BASE_URL + "engines/neptune"
@@ -72,15 +73,15 @@ public class NetworkManager {
         requestURL.addValue("application/json", forHTTPHeaderField: "Content-Type")
         requestURL.setValue("\(encodingData)", forHTTPHeaderField: "Content-Length")
         
-        print("(Olympus) Change Spot URL : \(url)")
-        do {
-            let jsonData: Data = try JSONEncoder().encode(input)
-            print(jsonData)
-            let jsonString: String = String.init(data:jsonData, encoding: .utf8) ?? "Error"
-            print(jsonString)
-        } catch {
-            print("err")
-        }
+//        print("(Olympus) Change Spot URL : \(url)")
+//        do {
+//            let jsonData: Data = try JSONEncoder().encode(input)
+//            print(jsonData)
+//            let jsonString: String = String.init(data:jsonData, encoding: .utf8) ?? "Error"
+//            print(jsonString)
+//        } catch {
+//            print("err")
+//        }
         
         let dataTask = URLSession.shared.dataTask(with: requestURL, completionHandler: { (data, response, error) in
             
