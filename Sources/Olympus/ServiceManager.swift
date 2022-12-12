@@ -152,7 +152,7 @@ public class ServiceManager {
         if (!self.currentSpotRfd.isEmpty) {
             let input = createNeptuneInput(bleDictionray: self.currentSpotRfd)
             let url = CHANGE_SPOT_URL + spotID + "/rf"
-            NetworkManager.shared.changeSpot(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
+            NetworkManager.shared.changeSpot(url: url, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, "Success")
                 } else {
