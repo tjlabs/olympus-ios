@@ -154,7 +154,7 @@ public class ServiceManager {
             let url = CHANGE_SPOT_URL + spotID + "/rf"
             NetworkManager.shared.changeSpot(url: url, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
-                    completion(statusCode, "Success")
+                    completion(statusCode, returnedString)
                 } else {
                     completion(statusCode, "invalid request")
                 }
