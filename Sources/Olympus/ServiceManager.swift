@@ -56,6 +56,7 @@ public class ServiceManager {
     public func stopService() {
         stopBle()
         stopTimer()
+        clearServiceVaraibles()
     }
     
     func startBle() {
@@ -177,5 +178,10 @@ public class ServiceManager {
         let convertNowStr = dateFormatter.string(from: nowDate)
         
         return convertNowStr
+    }
+    
+    func clearServiceVaraibles() {
+        self.currentRfd = [String: Double]()
+        self.currentSpotRfd = [String: Double]()
     }
 }

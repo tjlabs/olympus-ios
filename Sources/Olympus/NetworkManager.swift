@@ -1,7 +1,6 @@
 import Foundation
 
-//let RELEASE_URL_i = "https://calc-test.olympus.tjlabs.dev/"
-let RELEASE_URL_i = "https://test.calc.olympus.tjlabs.dev/"
+let RELEASE_URL_i = "https://global.calc.olympus.tjlabs.dev/"
 
 var BASE_URL = RELEASE_URL_i
 let NEPTUNE_URL = BASE_URL + "engines/neptune"
