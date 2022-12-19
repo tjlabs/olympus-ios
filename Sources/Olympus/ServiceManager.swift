@@ -49,6 +49,7 @@ public class ServiceManager {
     }
     
     public func startService() {
+        setRegion(regionName: "global")
         startBle()
         startTimer()
     }
@@ -183,5 +184,14 @@ public class ServiceManager {
     func clearServiceVaraibles() {
         self.currentRfd = [String: Double]()
         self.currentSpotRfd = [String: Double]()
+    }
+    
+    public func setRegion(regionName: String) {
+        if (regionName.isEmpty) {
+            REGION = "global"
+        } else {
+            REGION = regionName
+        }
+        print("(Olympus) Region : \(REGION)")
     }
 }
