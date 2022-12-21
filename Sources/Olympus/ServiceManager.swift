@@ -115,7 +115,8 @@ public class ServiceManager {
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
         if (!self.currentRfd.isEmpty) {
             let input = createNeptuneInput(bleDictionray: self.currentRfd)
-            print("(Olympus) Received Force Data : \(input)")
+            print("(Olympus) Get Spot URL : \(NEPTUNE_URL)")
+            print("(Olympus) Get Spot Input : \(input)")
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
@@ -155,6 +156,9 @@ public class ServiceManager {
         if (!self.currentSpotRfd.isEmpty) {
             let input = createNeptuneInput(bleDictionray: self.currentSpotRfd)
             let url = CHANGE_SPOT_URL + spotID + "/rf"
+            
+            print("(Olympus) Change Spot URL : \(url)")
+            print("(Olympus) Change Spot Input : \(input)")
             NetworkManager.shared.changeSpot(url: url, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
