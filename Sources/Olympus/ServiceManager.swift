@@ -113,8 +113,9 @@ public class ServiceManager {
     }
     
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
-        if (!self.currentRfd.isEmpty) {
-            let input = createNeptuneInput(bleDictionray: self.currentRfd)
+        let bleDictionray = bleManager.bleAvg
+        if (!bleDictionray.isEmpty) {
+            let input = createNeptuneInput(bleDictionray: bleDictionray)
             print("(Olympus) Get Spot URL : \(NEPTUNE_URL)")
             print("(Olympus) Get Spot Input : \(input)")
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
@@ -133,10 +134,10 @@ public class ServiceManager {
         var rfd: rf = rf()
         var inputReceivedForce: [ble] = [ble()]
         
-        print("(Olympus) Create Input : \(self.currentRfd.keys.count)")
-        for key in self.currentRfd.keys {
+        print("(Olympus) Create Input : \(bleDictionray.keys.count)")
+        for key in bleDictionray.keys {
             let id = key
-            let rssi: Double = self.currentRfd[key] ?? -100.0
+            let rssi: Double = bleDictionray[key] ?? -100.0
 
             var wardData: ble = ble()
             wardData.wardID = id
@@ -155,8 +156,9 @@ public class ServiceManager {
     }
     
     public func changeSpot(spotID: String, completion: @escaping (Int, String) -> Void) {
-        if (!self.currentSpotRfd.isEmpty) {
-            let input = createNeptuneInput(bleDictionray: self.currentSpotRfd)
+        let bleDictionary = bleManager.bleSpotAvg
+        if (!bleDictionary.isEmpty) {
+            let input = createNeptuneInput(bleDictionray: bleDictionary)
             let url = CHANGE_SPOT_URL + spotID + "/rf"
             
             print("(Olympus) Change Spot URL : \(url)")
