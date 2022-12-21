@@ -115,6 +115,7 @@ public class ServiceManager {
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
         if (!self.currentRfd.isEmpty) {
             let input = createNeptuneInput(bleDictionray: self.currentRfd)
+            print("(Olympus) Received Force Data : \(input)")
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
