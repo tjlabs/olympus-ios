@@ -132,7 +132,8 @@ public class ServiceManager {
     func createNeptuneInput(bleDictionray: Dictionary<String, Double>) -> ReceivedForce {
         var rfd: rf = rf()
         var inputReceivedForce: [ble] = [ble()]
-
+        
+        print("(Olympus) Create Input : \(self.currentRfd.keys.count)")
         for key in self.currentRfd.keys {
             let id = key
             let rssi: Double = self.currentRfd[key] ?? -100.0
@@ -142,6 +143,7 @@ public class ServiceManager {
             wardData.rssi = rssi
 
             inputReceivedForce.append(wardData)
+            print("(Olympus) Create Input : \(wardData.wardID) = \(wardData.rssi)")
         }
 
         inputReceivedForce.remove(at: 0)
