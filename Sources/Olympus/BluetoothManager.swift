@@ -78,6 +78,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var bleDiscoveredTime: Double = 0
     
     public var BLE_VALID_TIME: Double = 1000
+    let BLE_SPOT_VALID_TIME: Double = 10000
     
     override init() {
         super.init()
@@ -325,7 +326,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                 let rssi = bleData[i][0]
                 let time = bleData[i][1]
                 
-                if ((nowTime - time <= 5000) && (rssi >= -100)) {
+                if ((nowTime - time <= BLE_SPOT_VALID_TIME) && (rssi >= -100)) {
                     let dataToAdd: [Double] = [rssi, time]
                     newValue.append(dataToAdd)
                 }

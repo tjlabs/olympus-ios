@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-import CoreMotion
 
 public class ServiceManager {
     
@@ -11,9 +10,6 @@ public class ServiceManager {
     var osVersion: Int = 0
     
     // ----- Sensor & BLE ----- //
-    var sensorData = SensorData()
-    let motionManager = CMMotionManager()
-    let motionAltimeter = CMAltimeter()
     var bleManager = BLECentralManager()
     // ------------------------ //
     
@@ -116,7 +112,6 @@ public class ServiceManager {
         let bleDictionray = bleManager.bleAvg
         if (!bleDictionray.isEmpty) {
             let input = createNeptuneInput(bleDictionray: bleDictionray)
-            print("(Olympus) Get Spot URL : \(NEPTUNE_URL)")
             print("(Olympus) Get Spot Input : \(input)")
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
@@ -161,7 +156,6 @@ public class ServiceManager {
             let input = createNeptuneInput(bleDictionray: bleDictionary)
             let url = CHANGE_SPOT_URL + spotID + "/rf"
             
-            print("(Olympus) Change Spot URL : \(url)")
             print("(Olympus) Change Spot Input : \(input)")
             NetworkManager.shared.changeSpot(url: url, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
