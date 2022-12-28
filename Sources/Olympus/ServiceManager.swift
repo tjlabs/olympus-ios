@@ -195,8 +195,10 @@ public class ServiceManager {
     public func setRegion(regionName: String) {
         if (regionName.isEmpty) {
             REGION = "global"
+            BASE_URL = HTTPS + REGION + ".calc.olympus.tjlabs.dev/"
         } else {
             REGION = regionName
+            BASE_URL = HTTPS + REGION + ".calc.olympus.tjlabs.dev/"
         }
         print("(Olympus) Region : \(REGION)")
         print("(Olympus) Get Spot URL Changed : \(NEPTUNE_URL)")
