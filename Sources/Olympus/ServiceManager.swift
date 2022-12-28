@@ -199,5 +199,7 @@ public class ServiceManager {
             REGION = regionName
         }
         print("(Olympus) Region : \(REGION)")
+        print("(Olympus) Get Spot URL Changed : \(NEPTUNE_URL)")
+        print("(Olympus) Change Spot URL Changed : \(CHANGE_SPOT_URL)")
     }
 }
