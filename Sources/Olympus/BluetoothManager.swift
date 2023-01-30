@@ -76,6 +76,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var bleForSpotChange = [String: [[Double]]]()
     var bleSpotAvg = [String: Double]()
     var bleDiscoveredTime: Double = 0
+    var isWard: Bool = false
     
     public var BLE_VALID_TIME: Double = 1000
     let BLE_SPOT_VALID_TIME: Double = 10000
@@ -160,6 +161,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if let bleName = discoveredPeripheral.name {
             
             if bleName.contains("TJ-") {
+                self.isWard = true
                 
                 let deviceIDString = bleName.substring(from: 8, to: 15)
                 
@@ -205,6 +207,8 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
                 }
+            } else {
+                self.isWard = false
             }
         }
     }

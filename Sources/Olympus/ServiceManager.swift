@@ -108,6 +108,10 @@ public class ServiceManager {
         }
     }
     
+    public func isWardExist() -> Bool {
+        return bleManager.isWard
+    }
+    
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
         let bleDictionray = bleManager.bleAvg
         if (!bleDictionray.isEmpty) {
