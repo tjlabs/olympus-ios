@@ -145,11 +145,32 @@ public class ServiceManager {
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
                 } else {
-                    completion(statusCode, "invalid request")
+                    completion(statusCode, "Invalid request")
                 }
             })
         } else {
-            completion(500, "invalid request")
+            completion(500, localTime + " , (Olympus) RFD for Spot is empty")
+        }
+    }
+    
+    public func getSpotResultForLongTime(completion: @escaping (Int, String) -> Void) {
+        let localTime = getLocalTimeString()
+        
+        let bleDictionray = bleManager.bleAvgLong
+        if (!bleDictionray.isEmpty) {
+            let input = createNeptuneInput(bleDictionray: bleDictionray)
+            
+            print(localTime + " , (Olympus) Get Spot for Long Time URL : \(NEPTUNE_URL)")
+            print(localTime + " , (Olympus) Get Spot for Long Time Input : \(input)")
+            NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
+                if (statusCode == 200) {
+                    completion(statusCode, returnedString)
+                } else {
+                    completion(statusCode, "Invalid request")
+                }
+            })
+        } else {
+            completion(500, localTime + " , (Olympus) RFD for Spot is empty")
         }
     }
     
@@ -194,27 +215,12 @@ public class ServiceManager {
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
                 } else {
-                    completion(statusCode, "invalid request")
+                    completion(statusCode, "Invalid request")
                 }
             })
         } else {
-            completion(500, "RFD for Spot is empty")
+            completion(500, localTime + " , (Olympus) RFD for Spot is empty")
         }
-    }
-    
-    func getCurrentTimeInMilliseconds() -> Int
-    {
-        return Int(Date().timeIntervalSince1970 * 1000)
-    }
-    
-    func getLocalTimeString() -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd-HH-mm-ss"
-        dateFormatter.locale = Locale(identifier:"ko_KR")
-        let nowDate = Date()
-        let convertNowStr = dateFormatter.string(from: nowDate)
-        
-        return convertNowStr
     }
     
     func clearServiceVaraibles() {

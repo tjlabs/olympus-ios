@@ -69,8 +69,10 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     let oneServiceUUID   = CBUUID(string: TJLABS_UUID)
     
     var bleDictionary = [String: [[Double]]]()
+    var bleDictionaryLong = [String: [[Double]]]()
     var bleRaw = [String: Double]()
     var bleAvg = [String: Double]()
+    var bleAvgLong = [String: Double]()
     var bleCheck = [String: [Double]]()
     
     var bleForSpotChange = [String: [[Double]]]()
@@ -78,6 +80,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     var bleDiscoveredTime: Double = 0
     
     public var BLE_VALID_TIME: Double = 1000
+    public var BLE_VALID_TIME_LONG: Double = 10000 //ms
     let BLE_SPOT_VALID_TIME: Double = 10000
     
     override init() {
@@ -189,6 +192,17 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         bleDictionary.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
                     }
                     
+                    if (bleDictionaryLong.contains(where: condition)) {
+                        let data = bleDictionaryLong.filter(condition)
+                        var value:[[Double]] = data[bleName]!
+                        let dataToAdd: [Double] = [RSSI.doubleValue, bleTime]
+                        value.append(dataToAdd)
+                        
+                        bleDictionaryLong.updateValue(value, forKey: bleName)
+                    } else {
+                        bleDictionaryLong.updateValue([[RSSI.doubleValue, bleTime]], forKey: bleName)
+                    }
+                    
                     if (bleForSpotChange.contains(where: condition)) {
                         let data = bleForSpotChange.filter(condition)
                         var value:[[Double]] = data[bleName]!
@@ -201,6 +215,7 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                     }
                     
                     trimBleData()
+                    trimLongBleData()
                     trimSpotBleData()
                     
                     NotificationCenter.default.post(name: .scanInfo, object: nil, userInfo: userInfo)
@@ -282,6 +297,15 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         }
     }
     
+    func setValidLongTime(time: Double) {
+        // time is ms
+        self.BLE_VALID_TIME_LONG = time
+        trimLongBleData()
+        
+        let localTime = getLocalTimeString()
+        print(localTime + " , (Olympus) Set Valid RFD Time for long duration = \(self.BLE_VALID_TIME_LONG)")
+    }
+    
     func trimBleData() {
         let nowTime = getCurrentTimeInMilliseconds()
         
@@ -311,6 +335,35 @@ class BLECentralManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bleCheck = chekcBleData(bleDictionary: bleDictionary)
         bleRaw = latestBleData(bleDictionary: bleDictionary)
         bleAvg = avgBleData(bleDictionary: bleDictionary)
+    }
+    
+    func trimLongBleData() {
+        let nowTime = getCurrentTimeInMilliseconds()
+        
+        let keys: [String] = Array(bleDictionaryLong.keys.sorted())
+        for index in 0..<keys.count {
+            let bleID: String = keys[index]
+            let bleData: [[Double]] = bleDictionaryLong[bleID]!
+            let bleCount = bleData.count
+            var newValue = [[Double]]()
+            for i in 0..<bleCount {
+                let rssi = bleData[i][0]
+                let time = bleData[i][1]
+                
+                if ((nowTime - time <= BLE_VALID_TIME_LONG) && (rssi >= -100)) {
+                    let dataToAdd: [Double] = [rssi, time]
+                    newValue.append(dataToAdd)
+                }
+            }
+            
+            if ( newValue.count == 0 ) {
+                bleDictionaryLong.removeValue(forKey: bleID)
+            } else {
+                bleDictionaryLong.updateValue(newValue, forKey: bleID)
+            }
+        }
+        
+        bleAvgLong = avgBleData(bleDictionary: bleDictionaryLong)
     }
     
     func trimSpotBleData() {
