@@ -18,8 +18,7 @@ public class ServiceManager {
     var RF_INTERVAL: TimeInterval = 1/2 // second
     // ------------------------ //
     
-    var isActiveService: Bool = true
-    
+    var isActiveService: Bool = false
     
     // --------- RFD --------- //
     var timeSleepRF: Double = 0
@@ -29,25 +28,36 @@ public class ServiceManager {
     var currentSpotRfd = [String: Double]()
     // ------------------------ //
     
-    public var bleAvg = [String: Double]()
-    
     public init() {
+        let localTime = getLocalTimeString()
+        
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
-        print("Device Model : \(deviceModel)")
         osVersion = Int(arr[0]) ?? 0
-        print("OS : \(osVersion)")
+        
+        print(localTime + " , (Olympus) Device Model : \(deviceModel)")
+        print(localTime + " , (Olympus) OS : \(osVersion)")
     }
     
     func initService() {
         
     }
     
-    public func startService() {
+    public func startService() -> (Bool, String) {
+        let localTime = getLocalTimeString()
+        let log: String = localTime + " , (Olympus) Success : Service Initalization"
+        
+        var isSuccess: Bool = true
+        var message: String = log
+        
         setRegion(regionName: "global")
         startBle()
         startTimer()
+        
+        isActiveService = true
+        
+        return (isSuccess, message)
     }
     
     public func stopService() {
@@ -79,13 +89,16 @@ public class ServiceManager {
     }
     
     @objc func receivedForceTimerUpdate() {
+        let localTime = getLocalTimeString()
+        
         bleManager.trimBleData()
         bleManager.trimSpotBleData()
         
         var bleDictionary = bleManager.bleAvg
         var bleSpotDictionary = bleManager.bleSpotAvg
-        if (deviceModel == "iPhone 13 Mini" || deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
+        if (deviceModel == "iPhone 12 Mini" || deviceModel == "iPhone X") {
             bleDictionary.keys.forEach { bleDictionary[$0] = bleDictionary[$0]! + 7 }
+            bleSpotDictionary.keys.forEach { bleSpotDictionary[$0] = bleSpotDictionary[$0]! + 7 }
         }
         
         if (!bleDictionary.isEmpty) {
@@ -98,7 +111,8 @@ public class ServiceManager {
         } else {
             self.timeSleepRF += RF_INTERVAL
             if (self.timeSleepRF >= SLEEP_THRESHOLD) {
-                print("(Jupiter) Enter Sleep Mode")
+                
+                print(localTime + ", (Olympus) Enter Sleep Mode")
                 self.isActiveService = false
             }
         }
@@ -119,12 +133,14 @@ public class ServiceManager {
     }
     
     public func getSpotResult(completion: @escaping (Int, String) -> Void) {
+        let localTime = getLocalTimeString()
+        
         let bleDictionray = bleManager.bleAvg
         if (!bleDictionray.isEmpty) {
             let input = createNeptuneInput(bleDictionray: bleDictionray)
             
-            print("(Olympus) Get Spot URL : \(NEPTUNE_URL)")
-            print("(Olympus) Get Spot Input : \(input)")
+            print(localTime + " , (Olympus) Get Spot URL : \(NEPTUNE_URL)")
+            print(localTime + " , (Olympus) Get Spot Input : \(input)")
             NetworkManager.shared.calcSpots(url: NEPTUNE_URL, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
@@ -138,10 +154,12 @@ public class ServiceManager {
     }
     
     func createNeptuneInput(bleDictionray: Dictionary<String, Double>) -> ReceivedForce {
+        let localTime = getLocalTimeString()
+        
         var rfd: rf = rf()
         var inputReceivedForce: [ble] = [ble()]
         
-        print("(Olympus) Create Input : \(bleDictionray.keys.count)")
+        print(localTime + " , (Olympus) Create Input : \(bleDictionray.keys.count)")
         for key in bleDictionray.keys {
             let id = key
             let rssi: Double = bleDictionray[key] ?? -100.0
@@ -151,7 +169,7 @@ public class ServiceManager {
             wardData.rssi = rssi
 
             inputReceivedForce.append(wardData)
-            print("(Olympus) Create Input : \(wardData.wardID) = \(wardData.rssi)")
+            print(localTime + " , (Olympus) Create Input : \(wardData.wardID) = \(wardData.rssi)")
         }
 
         inputReceivedForce.remove(at: 0)
@@ -163,13 +181,15 @@ public class ServiceManager {
     }
     
     public func changeSpot(spotID: String, completion: @escaping (Int, String) -> Void) {
+        let localTime = getLocalTimeString()
+        
         let bleDictionary = bleManager.bleSpotAvg
         if (!bleDictionary.isEmpty) {
             let input = createNeptuneInput(bleDictionray: bleDictionary)
             let url = CHANGE_SPOT_URL + spotID + "/rf"
             
-            print("(Olympus) Change Spot URL : \(url)")
-            print("(Olympus) Change Spot Input : \(input)")
+            print(localTime + " , (Olympus) Change Spot URL : \(url)")
+            print(localTime + " , (Olympus) Change Spot Input : \(input)")
             NetworkManager.shared.changeSpot(url: url, input: input, completion: { statusCode, returnedString in
                 if (statusCode == 200) {
                     completion(statusCode, returnedString)
@@ -203,6 +223,8 @@ public class ServiceManager {
     }
     
     public func setRegion(regionName: String) {
+        let localTime = getLocalTimeString()
+        
         if (regionName.isEmpty) {
             REGION = "global"
         } else {
@@ -213,8 +235,8 @@ public class ServiceManager {
         NEPTUNE_URL = BASE_URL + "engines/neptune"
         CHANGE_SPOT_URL = BASE_URL + "spots/"
         
-        print("(Olympus) Region : \(REGION)")
-        print("(Olympus) Get Spot URL Changed : \(NEPTUNE_URL)")
-        print("(Olympus) Change Spot URL Changed : \(CHANGE_SPOT_URL)")
+        print(localTime + " , (Olympus) Region : \(REGION)")
+        print(localTime + " , (Olympus) Get Spot URL Changed : \(NEPTUNE_URL)")
+        print(localTime + " , (Olympus) Change Spot URL Changed : \(CHANGE_SPOT_URL)")
     }
 }
