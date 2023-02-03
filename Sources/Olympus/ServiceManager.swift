@@ -173,6 +173,11 @@ public class ServiceManager {
         }
     }
     
+    public func changeValidTime(time: Double) {
+        // time is ms
+        bleManager.setValidLongTime(time: time)
+    }
+    
     func createNeptuneInput(bleDictionray: Dictionary<String, Double>) -> ReceivedForce {
         let localTime = getLocalTimeString()
         
@@ -199,6 +204,7 @@ public class ServiceManager {
         
         return receivedForce
     }
+    
     
     public func changeSpot(spotID: String, completion: @escaping (Int, String) -> Void) {
         let localTime = getLocalTimeString()
