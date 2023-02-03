@@ -29,13 +29,12 @@ public class ServiceManager {
     // ------------------------ //
     
     public init() {
-        let localTime = getLocalTimeString()
-        
         deviceModel = UIDevice.modelName
         os = UIDevice.current.systemVersion
         let arr = os.components(separatedBy: ".")
         osVersion = Int(arr[0]) ?? 0
         
+        let localTime = getLocalTimeString()
         print(localTime + " , (Olympus) Device Model : \(deviceModel)")
         print(localTime + " , (Olympus) OS : \(osVersion)")
     }
